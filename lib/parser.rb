@@ -34,13 +34,13 @@ class Parser
     end
 
     def create_note_option parser
-      parser.on('-n', '--new CONTENT', 'Create a new note') do |content|
+      parser.on('-n', '--new CONTENT', 'Create new note') do |content|
         @options[:action] = :new
         @options[:content] = content
       end
 
-      parser.on('-p --parent PARENT', 'Sets new note as a subnote of PARENT') do |parent|
-        return if @options[:action] != :new
+      parser.on('-p', '--parent PARENT', 'Sets new note as subnote of PARENT') do |parent|
+        raise 'CantSetParentOfNil' if @options[:action] != :new
 
         @options[:parent] = parent
       end
