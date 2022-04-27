@@ -1,3 +1,5 @@
+require 'securerandom'
+
 class Note
   attr_reader :content, :parent, :id
   
@@ -8,6 +10,6 @@ class Note
   end
 
   def gen_id
-    Time.now.strftime("%Y%m%d%k%M%S%L").to_i.to_s(36).to_i(36)[0..7]
+    SecureRandom.uuid.split('-').first
   end
 end
