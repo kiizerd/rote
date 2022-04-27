@@ -23,10 +23,20 @@ class Scribe
     note
   end
 
-  def read(query)
-    result = search(query)
+  def read(query, single=true)
+    result = nil
+
+    if single
+      result = find(query)
+      puts format(result)
+    else
+      result = find_all(query)
+      result.each do |note|
+        puts format(note)
+      end
+    end
+
     store.close
-    puts format(result)
   end
 
   def count
@@ -41,18 +51,43 @@ class Scribe
     end
   end
 
-  def search query
+  def find query
     notes = read_all
-    id_result = notes.find { |n| n.id == query.to_i }
+    id_result = find_by_id(query)
     return id_result if id_result
 
-    exact_content_result = notes.find { |n| n.content == query.to_s }
+    exact_content_result = find_by_exact_content(query)
     return exact_content_result if exact_content_result
 
-    regex_result = notes.find { |n| n.content.match(Regexp.new(query, true)) }
+    regex_result = find_by_match_regex(query.to_s)
     return regex_result if regex_result
+  end
 
-    puts 'Query result not found...'
+  def find_by_id query_id
+    read_all.find { |n| n.id == query_id.to_i } rescue nil
+  end
+
+  def find_by_exact_content query_content
+    read_all.find { |n| n.content == query.to_s } rescue nil
+  end
+
+  def find_by_match_regex query_string
+    read_all.find { |n| n.content.match(Regexp.new(query_string)) }
+  end
+
+  def find_all query
+    notes = read_all
+    refined_query = refine_query(query)
+    if refined_query.is_a?(Range)
+      puts 'query range of ids'
+      refined_query.map { |i| find_by_id(i) }.compact
+    elsif refined_query.is_a?(String)
+      puts 'query matching content'
+      puts query
+      read_all.select { |n| n.content.match(Regexp.new(query, true)) }
+    else
+      puts refined_query.class, :wtf
+    end
   end
   
   def read_all
@@ -74,6 +109,11 @@ class Scribe
   def format note
     return "NIL" if !note
     " - #{note.content.truncate(20)}\t\t -|- #{note.id} -|- #{note.parent}"
+  end
+
+  def refine_query query
+    result = Range.new(*query.split('..').map(&:to_i)) rescue query
+    result
   end
 
   def note_with_content_exists? content

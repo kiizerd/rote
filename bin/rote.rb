@@ -20,9 +20,10 @@ class Interface
     return if !data[:action]
 
     case data[:action]
-    when :new then @scribe.write(Factory.build(data[:content]))
+    when :new then @scribe.write(Factory.build(data))
     when :list then @scribe.list
     when :read then @scribe.read(data[:query])
+    when :search then @scribe.read(data[:query], false)
     else
       puts 'Interface::UnknownAction'
     end
