@@ -18,7 +18,7 @@ class Parser
 
       # Additional options
       create_note_option(parser)
-      list_notes_options(parser)
+      list_notes_option(parser)
 
       parser.separator 'Common options:'
       parser.on_tail('-h', '--help', "Show this message") do
@@ -45,7 +45,7 @@ class Parser
       end
     end
 
-    def list_notes_options parser
+    def list_notes_option parser
       parser.on('-l', '--list', 'Lists top level notes') do
         @options[:action] = :list
       end
