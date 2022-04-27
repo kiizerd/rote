@@ -23,10 +23,10 @@ class Scribe
     note
   end
 
-  def read(noteID)
-    result = store.readlines.map { |l| Marshal.load(l) }.find { |n| n[:id] == noteID }
+  def read(query)
+    result = search(query)
     store.close
-    result
+    puts format(result)
   end
 
   def count
@@ -39,6 +39,20 @@ class Scribe
     store.readlines.each do |line|
       puts format(load(line))
     end
+  end
+
+  def search query
+    notes = read_all
+    id_result = notes.find { |n| n.id == query.to_i }
+    return id_result if id_result
+
+    exact_content_result = notes.find { |n| n.content == query.to_s }
+    return exact_content_result if exact_content_result
+
+    regex_result = notes.find { |n| n.content.match(Regexp.new(query, true)) }
+    return regex_result if regex_result
+
+    puts 'Query result not found...'
   end
   
   def read_all
@@ -58,6 +72,7 @@ class Scribe
   end
 
   def format note
+    return "NIL" if !note
     " - #{note.content.truncate(20)}\t\t -|- #{note.id} -|- #{note.parent}"
   end
 

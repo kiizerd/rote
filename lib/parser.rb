@@ -19,6 +19,7 @@ class Parser
       # Additional options
       create_note_option(parser)
       list_notes_option(parser)
+      read_note_option(parser)
 
       parser.separator 'Common options:'
       parser.on_tail('-h', '--help', "Show this message") do
@@ -48,6 +49,13 @@ class Parser
     def list_notes_option parser
       parser.on('-l', '--list', 'Lists top level notes') do
         @options[:action] = :list
+      end
+    end
+
+    def read_note_option parser
+      parser.on('-r', '--read QUERY', 'Reads first note matching QUERY') do |query|
+        @options[:action] = :read
+        @options[:query] = query
       end
     end
   end
