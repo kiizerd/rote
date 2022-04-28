@@ -24,6 +24,7 @@ class Interface
     when :list then @scribe.list
     when :read then @scribe.read(data[:query])
     when :search then @scribe.read(data[:query], false)
+    when :delete then @scribe.delete(data[:id])
     else
       puts 'Interface::UnknownAction'
     end

@@ -16,11 +16,12 @@ class Parser
       parser.separator ''
       parser.separator 'Specific options:'
 
-      # Additional options
+      # Rote app options
       create_note_option(parser)
       list_notes_option(parser)
       read_note_option(parser)
       search_notes_option(parser)
+      delete_note_option(parser)
 
       parser.separator 'Common options:'
       parser.on_tail('-h', '--help', "Show this message") do
@@ -64,6 +65,13 @@ class Parser
       parser.on('-s', '--search QUERY', 'Reads all notes matching QUERY') do |query|
         @options[:action] = :search
         @options[:query] = query
+      end
+    end
+
+    def delete_note_option parser
+      parser.on('-d', '--delete ID', 'Deletes note with ID') do |id|
+        @options[:action] = :delete
+        @options[:id] = id
       end
     end
   end
